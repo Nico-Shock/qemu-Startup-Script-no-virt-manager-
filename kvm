@@ -1,0 +1,33 @@
+#!/bin/bash
+
+VM_DIR="/home/user/qemu/vm"
+WIN_ISO="/home/user/isos/windows10.iso"
+VIRTIO_ISO="/home/user/isos/virtio-win.iso"
+QCOW2_FILE="/home/user/qemu/windows10.qcow2"
+OVMF_CODE="/usr/share/OVMF/OVMF_CODE.secboot.fd"
+OVMF_VARS="/usr/share/OVMF/OVMF_VARS.fd"
+RAM="8192"
+CPU_CORES="6"
+DISK_SIZE="128G"
+
+mkdir -p "$VM_DIR" "$ISO_DIR"
+
+if [ ! -f "$QCOW2_FILE" ]; then
+    qemu-img create -f qcow2 "$QCOW2_FILE" "$DISK_SIZE"
+fi
+
+sudo qemu-system-x86_64 \
+    -enable-kvm \
+    -m "$RAM" \
+    -smp cores="$CPU_CORES" \
+    -cpu host \
+    -drive if=pflash,format=raw,readonly,file="$OVMF_CODE" \
+    -drive if=pflash,format=raw,file="$OVMF_VARS" \
+    -drive file="$QCOW2_FILE",format=qcow2,if=virtio \
+    -cdrom "$WIN_ISO" \
+    -drive file="$VIRTIO_ISO",media=cdrom \
+    -vga virtio \
+    -usbdevice tablet \
+    -net nic,model=virtio \
+    -net user \
+    -display sdl,gl=on
