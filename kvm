@@ -1,11 +1,15 @@
 #!/bin/bash
 
 VM_DIR="/home/user/qemu/vm"
-WIN_ISO="/home/user/isos/windows10.iso"
-VIRTIO_ISO="/home/user/isos/virtio-win.iso"
-QCOW2_FILE="/home/user/qemu/windows10.qcow2"
+QCOW2_FILE="$VM_DIR/windows10.qcow2"
+
+ISO_DIR="/home/user/isos"
+WIN_ISO="$ISO_DIR/windows10.iso"
+VIRTIO_ISO="$ISO_DIR/virtio-win.iso"
+
 OVMF_CODE="/usr/share/OVMF/OVMF_CODE.secboot.fd"
 OVMF_VARS="/usr/share/OVMF/OVMF_VARS.fd"
+
 RAM="8192"
 CPU_CORES="6"
 DISK_SIZE="128G"
@@ -21,7 +25,7 @@ sudo qemu-system-x86_64 \
     -m "$RAM" \
     -smp cores="$CPU_CORES" \
     -cpu host \
-    -drive if=pflash,format=raw,readonly,file="$OVMF_CODE" \
+    -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE" \
     -drive if=pflash,format=raw,file="$OVMF_VARS" \
     -drive file="$QCOW2_FILE",format=qcow2,if=virtio \
     -cdrom "$WIN_ISO" \
